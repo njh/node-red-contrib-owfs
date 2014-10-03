@@ -11,14 +11,10 @@
     "contributors": [
         {"name": "Nicholas Humfrey"}
     ],
-    "keywords": [
-        "1-wire",
-        "owfs",
-        "Node-RED"
-    ],
     "dependencies": {
         "node-owfs": "0.1.x"
     },
+    "keywords": [ "1-wire", "owfs", "node-red" ],
     "node-red": {
         "nodes": {
             "osc": "owfs.js"
