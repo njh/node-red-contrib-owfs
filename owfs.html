@@ -1,0 +1,76 @@
+<!--
+  Copyright 2014 Nicholas Humfrey
+  Copyright 2013 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="owfs">
+    <div class="form-row">
+        <label for="node-input-server"><i class="icon-tag"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="owfs">
+    <p>A node for talking to <a href="http://www.maximintegrated.com/en/products/comms/one-wire.html" target="_new">1-wire</a> devices using an <a href="http://owfs.org/" target="_new">owfs</a> <a href="http://owfs.org/index.php?page=owserver" target="_new">owserver</a> instance.</p>
+    <p>The device property to read from is specified in the <b>msg.topic</b>, for example <code>28.0080BE21AA00/temperature</code>. The reading will be output in <b>msg.payload</b>.</p>
+    <p>To trigger reading sensors periodically, use an inject node to send messages every X seconds.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('owfs',{
+        category: 'function',
+        defaults: {
+            name: {value:""},
+            server: {type:"owfs-server", required:true}
+        },
+        color:"#d8bfd8",
+        inputs:1,
+        outputs:1,
+        icon: "bridge.png",
+        label: function() {
+            return this.name||"owfs";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="owfs-server">
+    <div class="form-row node-input-server">
+        <label for="node-config-input-server"><i class="icon-bookmark"></i> server</label>
+        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 40%;" >
+        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
+        <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('owfs-server',{
+        category: 'config',
+        defaults: {
+            server: {value:"localhost",required:true},
+            port: {value:4304,required:true,validate:RED.validators.number()},
+        },
+        label: function() {
+            if (!this.server) { this.server = "localhost"; }
+            return this.server+":"+this.port;
+        }
+    });
+</script>
