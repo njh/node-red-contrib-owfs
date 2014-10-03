@@ -8,9 +8,6 @@
         "type":"git",
         "url":"https://github.com/njh/node-red-owfs.git"
     },
-    "contributors": [
-        {"name": "Nicholas Humfrey"}
-    ],
     "dependencies": {
         "node-owfs": "0.1.x"
     },
@@ -24,4 +21,8 @@
         "url": "https://github.com/njh/node-red-owfs/issues"
     },
     "scripts": {}
+    "author": {
+        "name": "Nicholas Humfrey",
+        "url": "http://njh.me/"
+    }
 }
