@@ -21,7 +21,7 @@
     },
     "node-red": {
         "nodes": {
-            "osc": "osc.js"
+            "osc": "owfs.js"
         }
     },
     "bugs": {
