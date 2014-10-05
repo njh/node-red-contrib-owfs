@@ -42,15 +42,15 @@ module.exports = function(RED) {
                             msg.payload = parseFloat(result);
                             node.send(msg);
                         } else {
-                            this.error(error);
+                            node.error(error);
                         }
                     });
                 } else {
-                    this.error("missing topic in message to owfs");
+                    node.error("missing topic in message to owfs");
                 }
             });
         } else {
-            this.error("missing server configuration for owfs");
+            node.error("missing server configuration for owfs");
         }
     }
     RED.nodes.registerType("owfs",OwfsNode);
