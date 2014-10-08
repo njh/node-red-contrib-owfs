@@ -9,7 +9,7 @@
         "url":"https://github.com/njh/node-red-owfs.git"
     },
     "dependencies": {
-        "owfs": "0.1.x",
+        "owfs": "0.2.x",
         "async": "0.9.x"
     },
     "keywords": [ "1-wire", "owfs", "node-red" ],
