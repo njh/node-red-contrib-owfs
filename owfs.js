@@ -18,7 +18,7 @@
 module.exports = function(RED) {
     "use strict";
     var owfs = require("owfs");
-    var util = require("util");
+    var async = require("async");
 
     // The OWFS Server Definition - this opens (and closes) the connection
     function OWFSServerNode(n) {
@@ -54,4 +54,43 @@ module.exports = function(RED) {
         }
     }
     RED.nodes.registerType("owfs",OwfsNode);
+
+    RED.httpAdmin.get("/owfs/dirall",function(req,res) {
+        var blacklist = new RegExp("/(?:address|crc8|errata|family|id|locator|r_[a-z]+)$");
+        if (!req.query.host || !req.query.port) {
+            return res.status(400).send({'error': "Missing host or port"});
+        }
+
+        var client = new owfs.Client(req.query.host, req.query.port);
+        var node = this;
+        client.dirall("/",function(error, directories) {
+            if (!error) {
+                async.mapSeries(directories,
+                    function(directory,cb) {
+                        client.dirall(directory,cb);
+                    },
+                    function(error, results) {
+                        if (!error) {
+                            var paths = [];
+                            results.forEach(function(device) {
+                                device.forEach(function(property) {
+                                    if (!property.match(blacklist)) {
+                                        paths.push(property.substr(1));
+                                    }
+                                });
+                            });
+                            res.send({'paths': paths.sort()});
+                        } else {
+                            console.log("Failed to get properties for device: "+error);
+                            res.status(500).send({'error': error});
+                        }
+                    }
+                );
+            } else {
+                console.log("Failed to get list of devices: "+error);
+                res.status(500).send({'error': error});
+            }
+        });
+    });
 }
+
