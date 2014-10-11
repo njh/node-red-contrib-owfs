@@ -15,6 +15,30 @@
   limitations under the License.
 -->
 
+
+<script type="text/x-red" data-template-name="owfs-server">
+    <div class="form-row node-input-server">
+        <label for="node-config-input-server"><i class="icon-bookmark"></i> server</label>
+        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 40%;" >
+        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
+        <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('owfs-server',{
+        category: 'config',
+        defaults: {
+            server: {value:"localhost",required:true},
+            port: {value:4304,required:true,validate:RED.validators.number()},
+        },
+        label: function() {
+            if (!this.server) { this.server = "localhost"; }
+            return this.server+":"+this.port;
+        }
+    });
+</script>
+
 <script type="text/x-red" data-template-name="owfs">
     <div class="form-row">
         <label for="node-input-server"><i class="icon-tag"></i> Server</label>
@@ -48,29 +72,6 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
-        }
-    });
-</script>
-
-<script type="text/x-red" data-template-name="owfs-server">
-    <div class="form-row node-input-server">
-        <label for="node-config-input-server"><i class="icon-bookmark"></i> server</label>
-        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 40%;" >
-        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
-        <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
-    </div>
-</script>
-
-<script type="text/javascript">
-    RED.nodes.registerType('owfs-server',{
-        category: 'config',
-        defaults: {
-            server: {value:"localhost",required:true},
-            port: {value:4304,required:true,validate:RED.validators.number()},
-        },
-        label: function() {
-            if (!this.server) { this.server = "localhost"; }
-            return this.server+":"+this.port;
         }
     });
 </script>
