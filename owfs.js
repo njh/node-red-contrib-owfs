@@ -45,7 +45,13 @@ module.exports = function(RED) {
                 paths.forEach(function(path) {
                     client.read(path, function(error, result) {
                         if (!error) {
-                            msg.payload = parseFloat(result);
+                            if (result.match(/^\-?\d+\.\d+$/)) {
+                                msg.payload = parseFloat(result);
+                            } else if (result.match(/^\-?\d+$/)) {
+                                msg.payload = parseInt(result);
+                            } else {
+                                msg.payload = result;
+                            }
                             msg.topic = path;
                             node.send(msg);
                         } else {
@@ -98,4 +104,3 @@ module.exports = function(RED) {
         });
     });
 }
-
