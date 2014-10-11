@@ -42,23 +42,29 @@ module.exports = function(RED) {
                 if (msg.topic) {
                     paths = [msg.topic];
                 }
-                paths.forEach(function(path) {
-                    client.read(path, function(error, result) {
-                        if (!error) {
-                            if (result.match(/^\-?\d+\.\d+$/)) {
-                                msg.payload = parseFloat(result);
-                            } else if (result.match(/^\-?\d+$/)) {
-                                msg.payload = parseInt(result);
+                
+                if (paths && paths.length > 0) {
+                    // Check if paths is empty
+                    paths.forEach(function(path) {
+                        client.read(path, function(error, result) {
+                            if (!error) {
+                                if (result.match(/^\-?\d+\.\d+$/)) {
+                                    msg.payload = parseFloat(result);
+                                } else if (result.match(/^\-?\d+$/)) {
+                                    msg.payload = parseInt(result);
+                                } else {
+                                    msg.payload = result;
+                                }
+                                msg.topic = path;
+                                node.send(msg);
                             } else {
-                                msg.payload = result;
+                                node.error(error);
                             }
-                            msg.topic = path;
-                            node.send(msg);
-                        } else {
-                            node.error(error);
-                        }
+                        });
                     });
-                });
+                } else {
+                    node.warn("no owfs paths configured and msg.topic is empty");
+                }
             });
         } else {
             node.error("missing server configuration for owfs");
