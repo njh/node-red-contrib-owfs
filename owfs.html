@@ -48,6 +48,13 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <div class="form-row">
+        <div id="node-input-paths-container-div" style="border-radius: 5px; height: 310px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll;">
+        <ol id="node-input-paths-container" style="list-style-type:none; margin: 0;">
+        </ol>
+        </div>
+        <a href="#" class="btn btn-mini" id="node-input-refresh-paths" style="margin-top: 4px"><i class="icon-refresh"></i> Refresh</a>
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="owfs">
@@ -61,7 +68,8 @@
         category: 'function',
         defaults: {
             name: {value:""},
-            server: {type:"owfs-server", required:true}
+            server: {type:"owfs-server", required:true},
+            paths: {value:[]}
         },
         color:"#C0DEED",
         inputs:1,
@@ -72,6 +80,70 @@
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            function generateRow(i,path) {
+                var container = $('<li/>',{style:"margin:0; padding:8px 0px; border-bottom: 1px solid #ccc;"});
+                var row = $('<div/>',{class:"node-input-path-row"}).appendTo(container);
+                var row2 = $('<div/>',{style:"padding-top: 5px;"}).appendTo(container);
+
+                var checkBox = $('<input/>',{id:"node-input-path-cb"+i,type:"checkbox",style:"margin: 5px; width: auto"}).appendTo(row);
+                checkBox.data('path', path);
+                var pathField = $('<label/>',{for:"node-input-path-cb"+i}).text(path).appendTo(row);
+                $("#node-input-paths-container").append(container);
+            }
+
+            var node = this;
+            function refreshPaths(currentPaths) {
+                // FIXME: add spinner?
+                var qs = $.param({
+                    "host": RED.nodes.node(node.server).server,
+                    "port": RED.nodes.node(node.server).port
+                });
+
+                $("#node-input-paths-container").empty();
+                $.getJSON("owfs/dirall?"+qs,function(data) {
+                    $.each(data["paths"], generateRow);
+                    $('#node-input-paths-container input:checkbox').each( function() {
+                        var checkbox = $(this);
+                        if ($.inArray(checkbox.data('path'), currentPaths) != -1) {
+                            checkbox.prop('checked', true);
+                        }
+                    });
+                });
+            };
+
+            function switchDialogResize(ev,ui) {
+                $("#node-input-paths-container-div").css("height",(ui.size.height-260)+"px");
+            };
+
+            $( "#dialog" ).on("dialogresize", switchDialogResize);
+            $( "#dialog" ).one("dialogopen", function(ev) {
+                var size = $( "#dialog" ).dialog('option','sizeCache-switch');
+                if (size) {
+                    switchDialogResize(null,{size:size});
+                }
+            });
+            $( "#dialog" ).one("dialogclose", function(ev,ui) {
+                $( "#dialog" ).off("dialogresize",switchDialogResize);
+            });
+
+            $("#node-input-refresh-paths").click( function() {
+                var currentPaths = $('#node-input-paths-container input:checked').map( function() {
+                    return $(this).data('path');
+                });
+                refreshPaths(currentPaths);
+            });
+
+            var serverNode = RED.nodes.node(this.server);
+            if (serverNode.server && serverNode.port) {
+                refreshPaths(this.paths);
+            }
+        },
+        oneditsave: function() {
+            this.paths = $('#node-input-paths-container input:checked').map( function() {
+                return $(this).data('path');
+            }).toArray();
         }
     });
 </script>
