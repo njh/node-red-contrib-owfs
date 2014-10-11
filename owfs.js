@@ -31,23 +31,28 @@ module.exports = function(RED) {
     function OwfsNode(n) {
         RED.nodes.createNode(this,n);
         this.server = n.server;
+        this.paths = n.paths;
         this.serverConfig = RED.nodes.getNode(this.server);
+
         var node = this;
-        if (this.serverConfig) {
-            this.client = new owfs.Client(this.serverConfig.server, this.serverConfig.port);
-            this.on("input", function(msg) {
+        if (node.serverConfig && node.serverConfig.server && node.serverConfig.port) {
+            node.on("input", function(msg) {
+                var client = new owfs.Client(node.serverConfig.server, node.serverConfig.port);
+                var paths = node.paths;
                 if (msg.topic) {
-                    this.client.read(msg.topic, function(error, result) {
+                    paths = [msg.topic];
+                }
+                paths.forEach(function(path) {
+                    client.read(path, function(error, result) {
                         if (!error) {
                             msg.payload = parseFloat(result);
+                            msg.topic = path;
                             node.send(msg);
                         } else {
                             node.error(error);
                         }
                     });
-                } else {
-                    node.error("missing topic in message to owfs");
-                }
+                });
             });
         } else {
             node.error("missing server configuration for owfs");
