@@ -48,12 +48,22 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <div class="form-row" style="margin-top: 25px">
+        <div class="btn-group">
+            <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-align-justify"></i> Select <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a id='node-input-select-none' href="#">None</a></li>
+                <li><a id='node-input-select-all' href="#">All</a></li>
+                <li><a id='node-input-select-temperature' href="#">All Temperature</a></li>
+            </ul>
+        </div>
+        <a class="btn btn-mini" id="node-input-refresh-paths" href="#"><i class="icon-refresh"></i> Refresh</a>
+    </div>
     <div class="form-row">
         <div id="node-input-paths-container-div" style="border-radius: 5px; height: 310px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll;">
         <ol id="node-input-paths-container" style="list-style-type:none; margin: 0;">
         </ol>
         </div>
-        <a href="#" class="btn btn-mini" id="node-input-refresh-paths" style="margin-top: 4px"><i class="icon-refresh"></i> Refresh</a>
     </div>
 </script>
 
@@ -133,6 +143,27 @@
                     return $(this).data('path');
                 });
                 refreshPaths(currentPaths);
+            });
+
+            $("#node-input-select-none").click( function() {
+                $('#node-input-paths-container input:checked').each( function() {
+                    $(this).prop('checked', false);
+                });
+            });
+
+            $("#node-input-select-all").click( function() {
+                $('#node-input-paths-container input:checkbox').each( function() {
+                    $(this).prop('checked', true);
+                });
+            });
+
+            $("#node-input-select-temperature").click( function() {
+                $('#node-input-paths-container input:checkbox').each( function() {
+                    var checkbox = $(this);
+                    if (checkbox.data('path').match(/\/temperature$/)) {
+                        checkbox.prop('checked', true);
+                    }
+                });
             });
 
             var serverNode = RED.nodes.node(this.server);
