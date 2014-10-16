@@ -74,8 +74,10 @@ module.exports = function(RED) {
 
     RED.httpAdmin.get("/owfs/dirall",function(req,res) {
         var blacklist = new RegExp("/(?:address|crc8|errata|family|id|locator|r_[a-z]+)$");
-        if (!req.query.host || !req.query.port) {
-            return res.status(400).send({'error': "Missing host or port"});
+        if (!req.query.host) {
+            return res.status(400).send({'error': "Missing 'host' parameter in query string"});
+        } else if (!req.query.port) {
+            return res.status(400).send({'error': "Missing 'port' parameter in query string"});
         }
 
         var client = new owfs.Client(req.query.host, req.query.port);
