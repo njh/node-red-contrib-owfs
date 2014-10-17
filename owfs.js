@@ -42,7 +42,7 @@ module.exports = function(RED) {
                 if (msg.topic) {
                     paths = [msg.topic];
                 }
-                
+
                 if (paths && paths.length > 0) {
                     // Check if paths is empty
                     paths.forEach(function(path) {
@@ -91,14 +91,18 @@ module.exports = function(RED) {
                     function(error, results) {
                         if (!error) {
                             var paths = [];
+                            var count = 0;
                             results.forEach(function(device) {
-                                device.forEach(function(property) {
-                                    if (!property.match(blacklist)) {
-                                        paths.push(property.substr(1));
-                                    }
-                                });
+                                if (device && device != "") {
+                                    count++;
+                                    device.forEach(function(property) {
+                                        if (property && !property.match(blacklist)) {
+                                            paths.push(property.substr(1));
+                                        }
+                                    });
+                                }
                             });
-                            res.send({'paths': paths.sort()});
+                            res.send({'deviceCount': count, 'paths': paths.sort()});
                         } else {
                             console.log("Failed to get properties for device: "+error);
                             res.status(500).send({'error': error});

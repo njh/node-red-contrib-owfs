@@ -58,6 +58,7 @@
             </ul>
         </div>
         <a class="btn btn-mini" id="node-input-refresh-paths" href="#"><i class="icon-refresh"></i> Refresh</a>
+        <span id="owfs-status"><small></small></span>
     </div>
     <div class="form-row">
         <div id="node-input-paths-container-div" style="border-radius: 5px; height: 310px; padding: 5px; border: 1px solid #ccc; overflow-y:scroll;">
@@ -111,15 +112,22 @@
                     "port": RED.nodes.node(node.server).port
                 });
 
+                $('#owfs-status small').html("Connecting...");
+
                 $("#node-input-paths-container").empty();
                 $.getJSON("owfs/dirall?"+qs,function(data) {
-                    $.each(data["paths"], generateRow);
-                    $('#node-input-paths-container input:checkbox').each( function() {
-                        var checkbox = $(this);
-                        if ($.inArray(checkbox.data('path'), currentPaths) != -1) {
-                            checkbox.prop('checked', true);
-                        }
-                    });
+                    if (data['deviceCount'] > 0) {
+                        $.each(data["paths"], generateRow);
+                        $('#node-input-paths-container input:checkbox').each( function() {
+                            var checkbox = $(this);
+                            if ($.inArray(checkbox.data('path'), currentPaths) != -1) {
+                                checkbox.prop('checked', true);
+                            }
+                        });
+                        $('#owfs-status small').html("Successfully read "+data["deviceCount"]+" devices.");
+                    } else {
+                        $('#owfs-status small').html("No 1-wire devices found.");
+                    }
                 });
             };
 
