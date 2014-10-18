@@ -130,6 +130,12 @@
                     } else {
                         $('#owfs-status small').html("No 1-wire devices found.");
                     }
+                }).fail(function(jqxhr) {
+                    if (jqxhr.status == 0) {
+                        $('#owfs-status small').html("Failed to connect to Node-RED");
+                    } else {
+                        $('#owfs-status small').html(jqxhr.status+": "+jqxhr.statusText);
+                    }
                 });
             };
 
