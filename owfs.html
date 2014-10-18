@@ -100,7 +100,7 @@
 
                 var checkBox = $('<input/>',{id:"node-input-path-cb"+i,type:"checkbox",style:"margin: 5px; width: auto"}).appendTo(row);
                 checkBox.data('path', path);
-                var pathField = $('<label/>',{for:"node-input-path-cb"+i}).text(path).appendTo(row);
+                var pathField = $('<label/>',{for:"node-input-path-cb"+i,style:"width:auto"}).text(path).appendTo(row);
                 $("#node-input-paths-container").append(container);
             }
 
