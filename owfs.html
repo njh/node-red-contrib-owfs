@@ -115,8 +115,10 @@
                 $('#owfs-status small').html("Connecting...");
 
                 $("#node-input-paths-container").empty();
-                $.getJSON("owfs/dirall?"+qs,function(data) {
-                    if (data['deviceCount'] > 0) {
+                $.getJSON("owfs/dirall?"+qs).done(function(data) {
+                    if (data['error']) {
+                        $('#owfs-status small').html("Error: "+data['error']);
+                    } else if (data['deviceCount'] > 0) {
                         $.each(data["paths"], generateRow);
                         $('#node-input-paths-container input:checkbox').each( function() {
                             var checkbox = $(this);

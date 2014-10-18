@@ -104,14 +104,12 @@ module.exports = function(RED) {
                             });
                             res.send({'deviceCount': count, 'paths': paths.sort()});
                         } else {
-                            console.log("Failed to get properties for device: "+error);
-                            res.status(500).send({'error': error});
+                            res.send({'error': error.message});
                         }
                     }
                 );
             } else {
-                console.log("Failed to get list of devices: "+error);
-                res.status(500).send({'error': error});
+                res.send({'error': error.message});
             }
         });
     });
