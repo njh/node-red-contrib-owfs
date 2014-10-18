@@ -55,6 +55,7 @@
                 <li><a id='node-input-select-none' href="#">None</a></li>
                 <li><a id='node-input-select-all' href="#">All</a></li>
                 <li><a id='node-input-select-temperature' href="#">All Temperature</a></li>
+                <li><a id='node-input-select-humidity' href="#">All Humidity</a></li>
             </ul>
         </div>
         <a class="btn btn-mini" id="node-input-refresh-paths" href="#"><i class="icon-refresh"></i> Refresh</a>
@@ -172,14 +173,22 @@
                     $(this).prop('checked', true);
                 });
             });
-
-            $("#node-input-select-temperature").click( function() {
+            
+            function checkPathsMatching(regexp) {
                 $('#node-input-paths-container input:checkbox').each( function() {
                     var checkbox = $(this);
-                    if (checkbox.data('path').match(/\/temperature$/)) {
+                    if (checkbox.data('path').match(regexp)) {
                         checkbox.prop('checked', true);
                     }
                 });
+            }
+
+            $("#node-input-select-temperature").click( function() {
+                checkPathsMatching(/\/temperature$/);
+            });
+
+            $("#node-input-select-humidity").click( function() {
+                checkPathsMatching(/\/humidity$/);
             });
 
             var serverNode = RED.nodes.node(this.server);
