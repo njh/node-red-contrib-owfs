@@ -44,8 +44,8 @@ module.exports = function(RED) {
                 }
 
                 if (paths && paths.length > 0) {
-                    // Check if paths is empty
-                    paths.forEach(function(path) {
+                    // Query owfs for each path, one at a time
+                    async.eachSeries(paths, function(path, callback) {
                         client.read(path, function(error, result) {
                             if (!error) {
                                 if (result.match(/^\-?\d+\.\d+$/)) {
@@ -60,6 +60,7 @@ module.exports = function(RED) {
                             } else {
                                 node.error(error);
                             }
+                            callback();
                         });
                     });
                 } else {
