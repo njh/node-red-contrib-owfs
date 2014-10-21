@@ -93,14 +93,12 @@ module.exports = function(RED) {
                             var paths = [];
                             var count = 0;
                             results.forEach(function(device) {
-                                if (device && device != "") {
-                                    count++;
-                                    device.forEach(function(property) {
-                                        if (property && !property.match(blacklist)) {
-                                            paths.push(property.substr(1));
-                                        }
-                                    });
-                                }
+                                count++;
+                                device.forEach(function(property) {
+                                    if (property && !property.match(blacklist)) {
+                                        paths.push(property.substr(1));
+                                    }
+                                });
                             });
                             res.send({'deviceCount': count, 'paths': paths.sort()});
                         } else {
