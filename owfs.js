@@ -20,24 +20,16 @@ module.exports = function(RED) {
     var owfs = require("owfs");
     var async = require("async");
 
-    // The OWFS Server Definition - this opens (and closes) the connection
-    function OWFSServerNode(n) {
-        RED.nodes.createNode(this,n);
-        this.server = n.server;
-        this.port = n.port;
-    }
-    RED.nodes.registerType("owfs-server", OWFSServerNode);
-
     function OwfsNode(n) {
         RED.nodes.createNode(this,n);
-        this.server = n.server;
+        this.host = n.host;
+        this.port = n.port;
         this.paths = n.paths;
-        this.serverConfig = RED.nodes.getNode(this.server);
 
         var node = this;
-        if (node.serverConfig && node.serverConfig.server && node.serverConfig.port) {
+        if (node.host && node.port) {
             node.on("input", function(msg) {
-                var client = new owfs.Client(node.serverConfig.server, node.serverConfig.port);
+                var client = new owfs.Client(node.host, node.port);
                 var paths = node.paths;
                 if (msg.topic) {
                     paths = [msg.topic];
@@ -68,7 +60,7 @@ module.exports = function(RED) {
                 }
             });
         } else {
-            node.error("missing server configuration for owfs");
+            node.error("missing host and port configuration for owfs");
         }
     }
     RED.nodes.registerType("owfs",OwfsNode);

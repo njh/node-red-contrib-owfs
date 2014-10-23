@@ -15,38 +15,18 @@
   limitations under the License.
 -->
 
-
-<script type="text/x-red" data-template-name="owfs-server">
-    <div class="form-row node-input-server">
-        <label for="node-config-input-server"><i class="icon-bookmark"></i> server</label>
-        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" style="width: 40%;" >
-        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> Port</label>
-        <input type="text" id="node-config-input-port" placeholder="Port" style="width:45px">
-    </div>
-</script>
-
-<script type="text/javascript">
-    RED.nodes.registerType('owfs-server',{
-        category: 'config',
-        defaults: {
-            server: {value:"localhost",required:true},
-            port: {value:4304,required:true,validate:RED.validators.number()},
-        },
-        label: function() {
-            if (!this.server) { this.server = "localhost"; }
-            return this.server+":"+this.port;
-        }
-    });
-</script>
-
 <script type="text/x-red" data-template-name="owfs">
     <div class="form-row">
-        <label for="node-input-server"><i class="icon-tag"></i> Server</label>
-        <input type="text" id="node-input-server">
+        <label for="node-input-]"><i class="icon-globe"></i> Host</label>
+        <input type="text" id="node-input-host" placeholder="localhost" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-port"><i class="icon-random"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="4304" />
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="text" id="node-input-name" placeholder="Name" />
     </div>
     <div class="form-row" style="margin-top: 25px">
         <div class="btn-group">
@@ -81,7 +61,8 @@
         category: 'function',
         defaults: {
             name: {value:""},
-            server: {type:"owfs-server", required:true},
+            host: {value:"localhost",required:true},
+            port: {value:4304,required:true,validate:RED.validators.number()},
             paths: {value:[]}
         },
         color:"#C0DEED",
@@ -108,16 +89,23 @@
 
             var node = this;
             function refreshPaths(currentPaths) {
-                // FIXME: add spinner?
-                var qs = $.param({
-                    "host": RED.nodes.node(node.server).server,
-                    "port": RED.nodes.node(node.server).port
-                });
+                var params = {
+                    "host": $('#node-input-host').val(),
+                    "port": $('#node-input-port').val()
+                };
 
-                $('#owfs-status small').html("Connecting...");
+                if (!params['host']) {
+                    $('#owfs-status small').html("No host set");
+                    return;
+                } else if (!params['port']) {
+                    $('#owfs-status small').html("No port set");
+                    return;
+                } else {
+                    $('#owfs-status small').html("Connecting...");
+                }
 
                 $("#node-input-paths-container").empty();
-                $.getJSON("owfs/dirall?"+qs).done(function(data) {
+                $.getJSON("owfs/dirall?"+$.param(params)).done(function(data) {
                     if (data['error']) {
                         $('#owfs-status small').html("Error: "+data['error']);
                     } else if (data['deviceCount'] > 0) {
@@ -174,7 +162,7 @@
                     $(this).prop('checked', true);
                 });
             });
-            
+
             function checkPathsMatching(regexp) {
                 $('#node-input-paths-container input:checkbox').each( function() {
                     var checkbox = $(this);
@@ -192,10 +180,7 @@
                 checkPathsMatching(/\/humidity$/);
             });
 
-            var serverNode = RED.nodes.node(this.server);
-            if (serverNode.server && serverNode.port) {
-                refreshPaths(this.paths);
-            }
+            refreshPaths(this.paths);
         },
         oneditsave: function() {
             this.paths = $('#node-input-paths-container input:checked').map( function() {
