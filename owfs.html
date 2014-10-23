@@ -71,8 +71,9 @@
 
 <script type="text/x-red" data-help-name="owfs">
     <p>A node for talking to <a href="http://www.maximintegrated.com/en/products/comms/one-wire.html" target="_new">1-wire</a> devices using an <a href="http://owfs.org/" target="_new">owfs</a> <a href="http://owfs.org/index.php?page=owserver" target="_new">owserver</a> instance.</p>
-    <p>The device property to read from is specified in the <b>msg.topic</b>, for example <code>28.0080BE21AA00/temperature</code>. The reading will be output in <b>msg.payload</b>.</p>
-    <p>To trigger reading sensors periodically, use an inject node to send messages every X seconds.</p>
+    <p>One more more owfs paths can be selected in the node edit dialog. Upon receiving an message on the input the node will request each of the values in turn from owfs and places the reading in <b>msg.payload</b>.</p>
+    <p>Alternatively a device path can be specified in the <b>msg.topic</b> field, for example <code>28.0080BE21AA00/temperature</code>. This will override any paths selected in the edit dialog.</p>
+    <p>To trigger reading sensors periodically, use an Inject node to send messages every X seconds.</p>
 </script>
 
 <script type="text/javascript">
