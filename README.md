@@ -22,6 +22,16 @@ The device property to read from is specified in the **msg.topic**, for example 
 To trigger reading sensors periodically, use an inject node to send messages every X seconds.
 
 
+Hardare Tested
+--------------
+
+* [DS18B20 Temperature Sensor](http://www.maximintegrated.com/en/products/DS18B20)
+* [DS9490R USB Host Adapter](http://www.maximintegrated.com/en/products/DS9490R)
+* [RPI2: 1-Wire Host Adapter for Raspberry Pi](http://www.sheepwalkelectronics.co.uk/product_info.php?cPath=22&products_id=30)
+* [SWE1: Temperature Sensor](http://www.sheepwalkelectronics.co.uk/product_info.php?cPath=23&products_id=53)
+* [SWE3: Humidity Sensor Module](http://www.sheepwalkelectronics.co.uk/product_info.php?cPath=23&products_id=55)
+
+
 
 [Node-RED]:  http://nodered.org/
 [1-wire]:    http://www.maximintegrated.com/en/products/comms/one-wire.html
