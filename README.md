@@ -17,10 +17,11 @@ Usage
 
 Install [owfs], either on the same system as Node-RED, or a system that can be reached over TCP. This node communicates with owfs using the owserver protocol - so owserver must be running.
 
-The device property to read from is specified in the **msg.topic**, for example <code>28.0080BE21AA00/temperature</code>. The reading will be output in **msg.payload**.
+One or more owfs paths can be selected in the node edit dialog. Upon receiving a message on the input the node, it will request each of the values in turn from owfs and places the reading in **msg.payload**.
 
-To trigger reading sensors periodically, use an inject node to send messages every X seconds.
+Alternatively a device path can be specified in the **msg.topic** field, for example <code>28.0080BE21AA00/temperature</code>. This will override any paths selected in the edit dialog.
 
+To trigger reading sensors periodically, use an Inject node to send messages every X seconds.
 
 Hardare Tested
 --------------
