@@ -50,7 +50,11 @@ module.exports = function(RED) {
                                 msg.topic = path;
                                 node.send(msg);
                             } else {
-                                node.error(error);
+                                if ('msg' in error) {
+                                    node.error(error.msg);
+                                } else {
+                                    node.error(error);
+                                }
                             }
                             callback();
                         });
