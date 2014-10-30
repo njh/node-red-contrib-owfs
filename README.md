@@ -23,6 +23,22 @@ Alternatively a device path can be specified in the **msg.topic** field, for exa
 
 To trigger reading sensors periodically, use an Inject node to send messages every X seconds.
 
+
+Example
+-------
+
+This example shows a simple flow to read a 1-wire temperature sensor using owfs and publish the reading to MQTT as a retained message.
+
+![screenshot](https://github.com/njh/node-red-contrib-owfs/raw/master/screenshot.png)
+
+In this flow, the inject node is used to specify the name of the 1-wire device to be read from, this triggers every 10 seconds. When the owfs node receives this message, it makes a query to owserver, running on the same machine. It takes a temperature reading and outputs the temperature value in msg.payload.
+
+The change node is used to set msg.retain to true - this causes MQTT to keep a copy of the latest temperature reading, so when a new client subscribes, it immediately gets a value.
+
+The flow can be downloaded from the Node-Red Flow Library here:
+http://flows.nodered.org/flow/b11cfe3a7728a297e44d
+
+
 Hardare Tested
 --------------
 
