@@ -48,6 +48,7 @@ module.exports = function(RED) {
                                     msg.payload = result;
                                 }
                                 msg.topic = path;
+                                msg.timestamp = Date.now();
                                 node.send(msg);
                             } else {
                                 if ('msg' in error) {
