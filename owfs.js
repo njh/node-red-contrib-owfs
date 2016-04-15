@@ -52,9 +52,9 @@ module.exports = function(RED) {
                                 node.send(msg);
                             } else {
                                 if ('msg' in error) {
-                                    node.error(error.msg);
+                                    node.error(error.msg, msg);
                                 } else {
-                                    node.error(error);
+                                    node.error(error, msg);
                                 }
                             }
                             callback();
