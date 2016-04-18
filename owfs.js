@@ -30,7 +30,6 @@ module.exports = function(RED) {
         node.on("input", function(msg) {
             var host = msg.host  ||  node.host;
             var port = msg.port  ||  node.port;
-            //node.log("owserver " + host + ":" + port);
             var client = new owfs.Client(host, port);
             var paths = node.paths;
             if (msg.topic) {
