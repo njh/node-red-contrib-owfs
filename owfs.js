@@ -27,46 +27,48 @@ module.exports = function(RED) {
         this.paths = n.paths;
 
         var node = this;
-        if (node.host && node.port) {
-            node.on("input", function(msg) {
-                var client = new owfs.Client(node.host, node.port);
-                var paths = node.paths;
-                if (msg.topic) {
-                    paths = [msg.topic];
-                }
+        node.on("input", function(msg) {
+            var host = msg.host  ||  node.host;
+            var port = msg.port  ||  node.port;
+            var client = new owfs.Client(host, port);
+            var paths = node.paths;
+            if (msg.topic) {
+                paths = [msg.topic];
+            }
 
-                if (paths && paths.length > 0) {
-                    // Query owfs for each path, one at a time
-                    async.eachSeries(paths, function(path, callback) {
-                        client.read(path, function(error, result) {
-                            if (!error) {
-                                if (result.match(/^\-?\d+\.\d+$/)) {
-                                    msg.payload = parseFloat(result);
-                                } else if (result.match(/^\-?\d+$/)) {
-                                    msg.payload = parseInt(result);
-                                } else {
-                                    msg.payload = result;
-                                }
-                                msg.topic = path;
-                                msg.timestamp = Date.now();
-                                node.send(msg);
-                            } else {
-                                if ('msg' in error) {
-                                    node.error(error.msg, msg);
-                                } else {
-                                    node.error(error, msg);
-                                }
-                            }
-                            callback();
-                        });
-                    });
-                } else {
-                    node.warn("no owfs paths configured and msg.topic is empty");
-                }
-            });
-        } else {
-            node.error("missing host and port configuration for owfs");
-        }
+            if (host && host.length > 0 && port && port.length > 0) {
+              if (paths && paths.length > 0) {
+                  // Query owfs for each path, one at a time
+                  async.eachSeries(paths, function(path, callback) {
+                      client.read(path, function(error, result) {
+                          if (!error) {
+                              if (result.match(/^\-?\d+\.\d+$/)) {
+                                  msg.payload = parseFloat(result);
+                              } else if (result.match(/^\-?\d+$/)) {
+                                  msg.payload = parseInt(result);
+                              } else {
+                                  msg.payload = result;
+                              }
+                              msg.topic = path;
+                              msg.timestamp = Date.now();
+                              node.send(msg);
+                          } else {
+                              if ('msg' in error) {
+                                  node.error(error.msg, msg);
+                              } else {
+                                  node.error(error, msg);
+                              }
+                          }
+                          callback();
+                      });
+                  });
+              } else {
+                  node.warn("no owfs paths configured and msg.topic is empty");
+              }
+          } else {
+              node.warn("missing host or port configuration and not provided by msg.host and msg.port");
+          }
+        });
     }
     RED.nodes.registerType("owfs",OwfsNode);
 

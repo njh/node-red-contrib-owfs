@@ -17,7 +17,7 @@
 
 <script type="text/x-red" data-template-name="owfs">
     <div class="form-row">
-        <label for="node-input-]"><i class="icon-globe"></i> Host</label>
+        <label for="node-input-host"><i class="icon-globe"></i> Host</label>
         <input type="text" id="node-input-host" placeholder="localhost" />
     </div>
     <div class="form-row">
@@ -53,6 +53,7 @@
     <p>A node for talking to <a href="http://www.maximintegrated.com/en/products/comms/one-wire.html" target="_new">1-wire</a> devices using an <a href="http://owfs.org/" target="_new">owfs</a> <a href="http://owfs.org/index.php?page=owserver" target="_new">owserver</a> instance.</p>
     <p>One or more owfs paths can be selected in the node edit dialog. Upon receiving a message on the input the node, it will request each of the values in turn from owfs and places the reading in <b>msg.payload</b>.</p>
     <p>Alternatively a device path can be specified in the <b>msg.topic</b> field, for example <code>28.0080BE21AA00/temperature</code>. This will override any paths selected in the edit dialog.</p>
+    <p>In addition the owserver port and/or host can be specified in <b>msg.host</b> and <b>msg.port</b>, overriding any settings in the node configuration.</p>
     <p>To trigger reading sensors periodically, use an Inject node to send messages every X seconds.</p>
 </script>
 
@@ -61,8 +62,8 @@
         category: 'function',
         defaults: {
             name: {value:""},
-            host: {value:"localhost",required:true},
-            port: {value:4304,required:true,validate:RED.validators.number()},
+            host: {value:"localhost"},
+            port: {value:4304,validate:RED.validators.regex(/^[0-9]*$/)},
             paths: {value:[]}
         },
         color:"#C0DEED",
