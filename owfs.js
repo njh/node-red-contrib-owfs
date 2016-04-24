@@ -19,6 +19,39 @@ module.exports = function(RED) {
     "use strict";
     var owfs = require("owfs");
     var async = require("async");
+    var Promise = require("bluebird");
+
+    var dirallslash = Promise.promisify(
+        owfs.Client.prototype.dirallslash
+    );
+
+    function recursiveDirall(client, path, blacklist) {
+        return dirallslash.call(client, path).then(function(entries) {
+            return Promise.filter(entries, function(entry) {
+                // Filter out any paths that match the blacklist
+                return !blacklist || !entry.match(blacklist);
+            }).mapSeries(function(entry) {
+                // We use mapSeries, to prevent lots of concurrent connections to owfs
+                if (entry.slice(-1) == '/') {
+                    return recursiveDirall(client, entry, blacklist);
+                } else {
+                    return entry;
+                }
+            });
+        });
+    }
+
+    function flattenArrayOfArrays(a, r) {
+        if (!r) r = [];
+        a.forEach(function(item) {
+            if (Array.isArray(item)) {
+                flattenArrayOfArrays(item, r);
+            } else {
+                r.push(item);
+            }
+        });
+        return r;
+    }
 
     function OwfsNode(n) {
         RED.nodes.createNode(this, n);
@@ -74,43 +107,34 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("owfs", OwfsNode);
 
-    RED.httpAdmin.get("/owfs/dirall",function(req,res) {
-        var blacklist = new RegExp("/(?:address|crc8|errata|family|id|locator|r_[a-z]+)$");
+    RED.httpAdmin.get("/owfs/dirall", function(req, res) {
         if (!req.query.host) {
-            return res.status(400).send({'error': "Missing 'host' parameter in query string"});
+            return res.status(400).send({
+                'error': "Missing 'host' parameter in query string"
+            });
         } else if (!req.query.port) {
-            return res.status(400).send({'error': "Missing 'port' parameter in query string"});
+            return res.status(400).send({
+                'error': "Missing 'port' parameter in query string"
+            });
         }
 
+        var blacklist = new RegExp("/(?:address|crc8|errata/|family|id|locator|pages/|r_[a-z]+)$");
         var client = new owfs.Client(req.query.host, req.query.port);
-        var node = this;
-        client.dirall("/",function(error, directories) {
-            if (!error) {
-                async.mapSeries(directories,
-                    function(directory,cb) {
-                        client.dirall(directory,cb);
-                    },
-                    function(error, results) {
-                        if (!error) {
-                            var paths = [];
-                            var count = 0;
-                            results.forEach(function(device) {
-                                count++;
-                                device.forEach(function(property) {
-                                    if (property && !property.match(blacklist)) {
-                                        paths.push(property.substr(1));
-                                    }
-                                });
-                            });
-                            res.send({'deviceCount': count, 'paths': paths.sort()});
-                        } else {
-                            res.send({'error': error.message});
-                        }
-                    }
-                );
-            } else {
-                res.send({'error': error.message});
-            }
-        });
+
+        recursiveDirall(client, "/", blacklist)
+            .then(function(paths) {
+                res.send({
+                    'deviceCount': paths.length,
+                    'paths': flattenArrayOfArrays(paths).map(function(path) {
+                        // Strip off the first slash - MQTT style
+                        return path.substr(1)
+                    })
+                });
+            })
+            .catch(function(error) {
+                res.send({
+                    'error': error.message
+                });
+            });
     });
 }
