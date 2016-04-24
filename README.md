@@ -21,6 +21,8 @@ One or more owfs paths can be selected in the node edit dialog. Upon receiving a
 
 Alternatively a device path can be specified in the **msg.topic** field, for example <code>28.0080BE21AA00/temperature</code>. This will override any paths selected in the edit dialog.
 
+In addition the owserver port and/or host can be specified in **msg.host** and **msg.port**, overriding any settings in the node configuration.
+
 To trigger reading sensors periodically, use an Inject node to send messages every X seconds.
 
 
