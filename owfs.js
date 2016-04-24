@@ -28,13 +28,14 @@ module.exports = function(RED) {
 
         var node = this;
         node.on("input", function(msg) {
-            var host = msg.host  ||  node.host;
-            var port = msg.port  ||  node.port;
-            var client = new owfs.Client(host, port);
-            var paths = node.paths;
-            if (msg.topic) {
-                paths = [msg.topic];
+            var host = msg.host ||  node.host;
+            var port = msg.port || node.port;
+            var paths = msg.topic || node.paths;
+            if (!Array.isArray(paths)) {
+                paths = [paths];
             }
+
+            var client = new owfs.Client(host, port);
 
             if (host && host.length > 0 && port && port > 1) {
               if (paths && paths.length > 0) {
