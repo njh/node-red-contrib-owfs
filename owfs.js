@@ -36,7 +36,7 @@ module.exports = function(RED) {
                 paths = [msg.topic];
             }
 
-            if (host && host.length > 0 && port && port.length > 0) {
+            if (host && host.length > 0 && port && port > 1) {
               if (paths && paths.length > 0) {
                   // Query owfs for each path, one at a time
                   async.eachSeries(paths, function(path, callback) {
