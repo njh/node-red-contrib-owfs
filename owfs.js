@@ -21,7 +21,7 @@ module.exports = function(RED) {
     var async = require("async");
 
     function OwfsNode(n) {
-        RED.nodes.createNode(this,n);
+        RED.nodes.createNode(this, n);
         this.host = n.host;
         this.port = n.port;
         this.paths = n.paths;
@@ -72,7 +72,7 @@ module.exports = function(RED) {
             });
         });
     }
-    RED.nodes.registerType("owfs",OwfsNode);
+    RED.nodes.registerType("owfs", OwfsNode);
 
     RED.httpAdmin.get("/owfs/dirall",function(req,res) {
         var blacklist = new RegExp("/(?:address|crc8|errata|family|id|locator|r_[a-z]+)$");
