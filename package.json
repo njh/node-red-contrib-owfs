@@ -13,7 +13,7 @@
         "async": "0.9.x",
         "bluebird": "~3.3.5"
     },
-    "keywords": [ "1-wire", "owfs", "node-red" ],
+    "keywords": [ "1-wire", "owfs", "node-red", "owserver", "DS18B20", "DS18S20" ],
     "node-red": {
         "nodes": {
             "owfs": "owfs.js"
