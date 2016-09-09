@@ -20,6 +20,7 @@ module.exports = function(RED) {
     var owfs = require("owfs");
     var async = require("async");
     var Promise = require("bluebird");
+    var ERR_RESET = "Device possibly resetting";
 
     var dirallslash = Promise.promisify(
         owfs.Client.prototype.dirallslash
@@ -58,6 +59,9 @@ module.exports = function(RED) {
         this.host = n.host;
         this.port = n.port;
         this.paths = n.paths;
+        this.retries = n.retries;
+        this.interval = n.interval;
+        this.retry_on_85 = n.retry_on_85;
 
         var node = this;
         node.on("input", function(msg) {
@@ -81,7 +85,22 @@ module.exports = function(RED) {
 
             // Query owfs for each path, one at a time
             async.eachSeries(paths, function(path, callback) {
-                client.read(path, function(error, result) {
+                async.retry({times: parseInt(node.retries,10)+1, interval: node.interval}, function(cb, results) {
+                    client.read(path, function(error, result) {
+                        if ( !error && result === "85" && node.retry_on_85 ) {
+                            // a value of 85 has been read and the flag is set to treat this as a possible error
+                            error = {msg: ERR_RESET, value: result};
+                            result = null;
+                        }
+                        cb(error, result);
+                    });
+                }, function(error, result) {
+                    // first check to see whether this is an 85 error
+                    if (error && error.msg === ERR_RESET) {
+                        // it is, but retries have not helped so assume it is actually the value read
+                        result = error.value
+                        error = null;
+                    }
                     if (!error) {
                         if (result.match(/^\-?\d+\.\d+$/)) {
                             msg.payload = parseFloat(result);
