@@ -26,6 +26,19 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name" />
     </div>
+    <div class="form-row">
+        <label for="node-input-retries"><i class="icon-tag"></i> Retries</label>
+        <input type="text" id="node-input-retries" placeholder="0" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-interval"><i class="icon-tag"></i> Interval ms</label>
+        <input type="text" id="node-input-interval" placeholder="1000" />
+    </div>
+    <div class="form-row">
+        <label for="node-input-retry_on_85"><i class="icon-tag"></i> Retry on 85</label>
+        <input type="checkbox" id="node-input-retry_on_85" placeholder="" style="display: inline-block; width: auto; vertical-align: top;/>
+        <label style="width: 70%;">&nbsp;</label>
+    </div>
     <div class="form-row" style="margin-top: 25px">
         <div class="btn-group">
             <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-align-justify"></i> Select <span class="caret"></span></a>
@@ -52,6 +65,8 @@
     <p>One or more owfs paths can be selected in the node edit dialog. Upon receiving a message on the input the node, it will request each of the values in turn from owfs and places the reading in <b>msg.payload</b>.</p>
     <p>Alternatively a device path can be specified in the <b>msg.topic</b> field, for example <code>28.0080BE21AA00/temperature</code>. This will override any paths selected in the edit dialog.</p>
     <p>In addition the owserver port and/or host can be specified in <b>msg.host</b> and <b>msg.port</b>, overriding any settings in the node configuration.</p>
+    <p>If a non zero Retries value is provided in the edit dialog then, if there is an error reading the value, requests will automatically be retried up to the specified count, with a delay between each request as specified in the Interval setting (milliseconds).</p>
+    <p>Certain devices (eg Maxim DS18B20) return a value of 85 while the device is resetting. If the Retry on 85 checkbox is set then the node will treat the value 85 as an error and will retry. If the final retry also returns 85 then this value will be accepted and used without showing an error.</p>
     <p>To trigger reading sensors periodically, use an Inject node to send messages every X seconds.</p>
 </script>
 
@@ -62,6 +77,9 @@
             name: {value:""},
             host: {value:"localhost"},
             port: {value:4304,validate:RED.validators.regex(/^[0-9]*$/)},
+            retries: {value:0,validate:RED.validators.regex(/^[0-9]*$/)},
+            interval: {value:1000,validate:RED.validators.regex(/^[0-9]*$/)},
+            retry_on_85: {value:false},
             paths: {value:[]}
         },
         color:"#C0DEED",

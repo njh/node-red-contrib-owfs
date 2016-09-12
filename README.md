@@ -23,6 +23,10 @@ Alternatively a device path can be specified in the **msg.topic** field, for exa
 
 In addition the owserver port and/or host can be specified in **msg.host** and **msg.port**, overriding any settings in the node configuration.
 
+If a non zero Retries value is provided in the edit dialog then, if there is an error reading the value, requests will automatically be retried up to the specified count, with a delay between each request as specified in the Interval setting (milliseconds).
+
+Certain devices (eg Maxim DS18B20) return a value of 85 while the device is resetting. If the Retry on 85 checkbox is set then the node will treat the value 85 as an error and will retry. If the final retry also returns 85 then this value will be accepted and used without showing an error.
+
 To trigger reading sensors periodically, use an Inject node to send messages every X seconds.
 
 
