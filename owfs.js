@@ -92,10 +92,16 @@ module.exports = function(RED) {
                 node.send(msg);
             };
 
+            node.status({fill:"blue", shape:"dot", text:"Reading"});
+
             Promise
                 .mapSeries(paths, function(path) { return clientRead(path); })
                 .each(sendResult)
+                .then(function() {
+                    node.status({});
+                })
                 .catch(function(error) {
+                    node.status({fill:"red", shape:"ring", text:"Error"});
                     if ('msg' in error) {
                         node.error(error.msg, msg);
                     } else {
