@@ -64,6 +64,7 @@ module.exports = function(RED) {
             var port = msg.port || node.port || 4304;
             if (!host || host.length < 1) {
                 node.warn("missing host configuration and not provided by msg.host");
+                node.status({fill:"red", shape:"ring", text:"No host"});
                 return;
             }
 
@@ -73,6 +74,7 @@ module.exports = function(RED) {
             }
             if (!paths || paths.length < 1) {
                 node.warn("no owfs paths configured and msg.topic is empty");
+                node.status({fill:"red", shape:"ring", text:"No path"});
                 return;
             }
 
