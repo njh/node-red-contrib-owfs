@@ -26,6 +26,11 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name" />
     </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <input type="checkbox" id="node-input-uncached" value="true" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-uncached" style="width: 70%;">Request Uncached Values</label>
+    </div>
     <div class="form-row" style="margin-top: 25px">
         <div class="btn-group">
             <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-align-justify"></i> Select <span class="caret"></span></a>
@@ -51,7 +56,8 @@
     <p>A node for talking to <a href="http://www.maximintegrated.com/en/products/comms/one-wire.html" target="_new">1-wire</a> devices using an <a href="http://owfs.org/" target="_new">owfs</a> <a href="http://owfs.org/index.php?page=owserver" target="_new">owserver</a> instance.</p>
     <p>One or more owfs paths can be selected in the node edit dialog. Upon receiving a message on the input the node, it will request each of the values in turn from owfs and places the reading in <b>msg.payload</b>.</p>
     <p>Alternatively a device path can be specified in the <b>msg.topic</b> field, for example <code>28.0080BE21AA00/temperature</code>. This will override any paths selected in the edit dialog.</p>
-    <p>In addition the owserver port and/or host can be specified in <b>msg.host</b> and <b>msg.port</b>, overriding any settings in the node configuration.</p>
+    <p>If the <a href="http://owfs.org/index.php?page=what-is-uncached">uncached</a> flag is set, then it requests the owfs gets fresh value from the 1-wire device, rather than a recent value.</p>
+    <p>Configuration options can be specified in <b>msg.host</b>, <b>msg.port</b> and <b>msg.uncached</b>, overriding any settings in the node configuration.</p>
     <p>To trigger reading sensors periodically, use an Inject node to send messages every X seconds.</p>
 </script>
 
@@ -60,6 +66,7 @@
         category: 'hardware',
         defaults: {
             name: {value:""},
+            uncached: {value:false},
             host: {value:"localhost"},
             port: {value:4304,validate:RED.validators.regex(/^[0-9]*$/)},
             paths: {value:[]}

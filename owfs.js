@@ -57,11 +57,13 @@ module.exports = function(RED) {
         this.host = n.host;
         this.port = n.port;
         this.paths = n.paths;
+        this.uncached = n.uncached;
 
         var node = this;
         node.on("input", function(msg) {
             var host = msg.host || node.host;
             var port = msg.port || node.port || 4304;
+            var uncached = msg.hasOwnProperty('uncached') ? msg.uncached : node.uncached;
             if (!host || host.length < 1) {
                 node.warn("missing host configuration and not provided by msg.host");
                 node.status({fill:"red", shape:"ring", text:"No host"});
@@ -81,6 +83,14 @@ module.exports = function(RED) {
             var client = new owfs.Client(host, port);
             var clientRead = Promise.promisify(client.read, {context: client});
 
+            var performRequest = function(path) {
+                if (uncached) {
+                    return clientRead('uncached/' + path);
+                } else {
+                    return clientRead(path);
+                }
+            }
+
             var sendResult = function(result, index) {
                 if (result.match(/^\-?\d+\.\d+$/)) {
                     msg.payload = parseFloat(result);
@@ -97,7 +107,7 @@ module.exports = function(RED) {
             node.status({fill:"blue", shape:"dot", text:"Reading"});
 
             Promise
-                .mapSeries(paths, function(path) { return clientRead(path); })
+                .mapSeries(paths, performRequest)
                 .each(sendResult)
                 .then(function() {
                     node.status({});
