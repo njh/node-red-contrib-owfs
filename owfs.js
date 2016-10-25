@@ -18,7 +18,6 @@
 module.exports = function(RED) {
     "use strict";
     var owfs = require("owfs");
-    var async = require("async");
     var Promise = require("bluebird");
 
     var dirallslash = Promise.promisify(
@@ -78,31 +77,31 @@ module.exports = function(RED) {
             }
 
             var client = new owfs.Client(host, port);
+            var clientRead = Promise.promisify(client.read, {context: client});
 
-            // Query owfs for each path, one at a time
-            async.eachSeries(paths, function(path, callback) {
-                client.read(path, function(error, result) {
-                    if (!error) {
-                        if (result.match(/^\-?\d+\.\d+$/)) {
-                            msg.payload = parseFloat(result);
-                        } else if (result.match(/^\-?\d+$/)) {
-                            msg.payload = parseInt(result);
-                        } else {
-                            msg.payload = result;
-                        }
-                        msg.topic = path;
-                        msg.timestamp = Date.now();
-                        node.send(msg);
+            var sendResult = function(result, index) {
+                if (result.match(/^\-?\d+\.\d+$/)) {
+                    msg.payload = parseFloat(result);
+                } else if (result.match(/^\-?\d+$/)) {
+                    msg.payload = parseInt(result);
+                } else {
+                    msg.payload = result;
+                }
+                msg.topic = paths[index];
+                msg.timestamp = Date.now();
+                node.send(msg);
+            };
+
+            Promise
+                .mapSeries(paths, function(path) { return clientRead(path); })
+                .each(sendResult)
+                .catch(function(error) {
+                    if ('msg' in error) {
+                        node.error(error.msg, msg);
                     } else {
-                        if ('msg' in error) {
-                            node.error(error.msg, msg);
-                        } else {
-                            node.error(error, msg);
-                        }
+                        node.error(error, msg);
                     }
-                    callback();
                 });
-            });
         });
     }
     RED.nodes.registerType("owfs", OwfsNode);

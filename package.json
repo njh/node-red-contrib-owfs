@@ -10,8 +10,7 @@
     },
     "dependencies": {
         "owfs": "~0.2.1",
-        "async": "0.9.x",
-        "bluebird": "~3.3.5"
+        "bluebird": "~3.4.6"
     },
     "keywords": [ "1-wire", "owfs", "node-red", "owserver", "DS18B20", "DS18S20" ],
     "node-red": {
