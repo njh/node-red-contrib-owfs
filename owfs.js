@@ -51,6 +51,17 @@ module.exports = function(RED) {
         });
         return r;
     }
+    
+    function parseResult(result) {
+        if (typeof result.match === 'function') {
+            if (result.match(/^\-?\d+\.\d+$/)) {
+                return parseFloat(result);
+            } else if (result.match(/^\-?\d+$/)) {
+                return parseInt(result);
+            }
+        }
+        return result;
+    }
 
     function OwfsNode(n) {
         RED.nodes.createNode(this, n);
@@ -92,13 +103,7 @@ module.exports = function(RED) {
             }
 
             var sendResult = function(result, index) {
-                if (result.match(/^\-?\d+\.\d+$/)) {
-                    msg.payload = parseFloat(result);
-                } else if (result.match(/^\-?\d+$/)) {
-                    msg.payload = parseInt(result);
-                } else {
-                    msg.payload = result;
-                }
+                msg.payload = parseResult(result);
                 msg.topic = paths[index];
                 msg.timestamp = Date.now();
                 node.send(msg);
