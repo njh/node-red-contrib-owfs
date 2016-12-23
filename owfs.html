@@ -27,6 +27,13 @@
         <input type="text" id="node-input-name" placeholder="Name" />
     </div>
     <div class="form-row">
+        <label for="node-input-mode"><i class="icon-resize-horizontal"></i> Mode</label>
+        <select id="node-input-mode" style="width:70%">
+            <option value="read">Read</option>
+            <option value="write">Write</option>
+        </select>
+    </div>
+    <div class="form-row">
         <label>&nbsp;</label>
         <input type="checkbox" id="node-input-uncached" value="true" style="display: inline-block; width: auto; vertical-align: top;">
         <label for="node-input-uncached" style="width: 70%;">Request Uncached Values</label>
@@ -67,6 +74,7 @@
         defaults: {
             name: {value:""},
             uncached: {value:false},
+            mode: {value:"read",validate:RED.validators.regex(/^read|write$/)},
             host: {value:"localhost"},
             port: {value:4304,validate:RED.validators.regex(/^[0-9]*$/)},
             paths: {value:[]}
@@ -76,7 +84,7 @@
         outputs:1,
         icon: "1w.png",
         label: function() {
-            return this.name||"owfs";
+            return this.name||"owfs "+this.mode;
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";

@@ -9,7 +9,7 @@
         "url":"https://github.com/njh/node-red-contrib-owfs.git"
     },
     "dependencies": {
-        "owfs": "~0.2.1",
+        "owfs": "~0.2.4",
         "bluebird": "~3.4.6"
     },
     "keywords": [ "1-wire", "owfs", "node-red", "owserver", "DS18B20", "DS18S20" ],

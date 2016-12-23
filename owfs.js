@@ -68,12 +68,14 @@ module.exports = function(RED) {
         this.host = n.host;
         this.port = n.port;
         this.paths = n.paths;
+        this.mode = n.mode;
         this.uncached = n.uncached;
 
         var node = this;
         node.on("input", function(msg) {
             var host = msg.host || node.host;
             var port = msg.port || node.port || 4304;
+            var mode = msg.mode || node.mode || 'read';
             var uncached = msg.hasOwnProperty('uncached') ? msg.uncached : node.uncached;
             if (!host || host.length < 1) {
                 node.warn("missing host configuration and not provided by msg.host");
@@ -93,13 +95,28 @@ module.exports = function(RED) {
 
             var client = new owfs.Client(host, port);
             var clientRead = Promise.promisify(client.read, {context: client});
+            var clientWrite = Promise.promisify(client.write, {context: client});
 
-            var performRequest = function(path) {
-                if (uncached) {
-                    return clientRead('uncached/' + path);
-                } else {
-                    return clientRead(path);
+            if (mode == 'write') {
+                var performRequest = function(path) {
+                    return clientWrite(path, msg.payload).then(function(result) {
+                        if (result[0].header.ret == 0) {
+                            return "ok";
+                        } else {
+                            return result[0].header.ret;
+                        }
+                    });
                 }
+                node.status({fill:"blue", shape:"dot", text:"Writing"});
+            } else {
+                var performRequest = function(path) {
+                    if (uncached) {
+                        return clientRead('uncached/' + path);
+                    } else {
+                        return clientRead(path);
+                    }
+                }
+                node.status({fill:"blue", shape:"dot", text:"Reading"});
             }
 
             var sendResult = function(result, index) {
@@ -108,8 +125,6 @@ module.exports = function(RED) {
                 msg.timestamp = Date.now();
                 node.send(msg);
             };
-
-            node.status({fill:"blue", shape:"dot", text:"Reading"});
 
             Promise
                 .mapSeries(paths, performRequest)
