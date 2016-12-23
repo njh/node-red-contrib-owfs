@@ -49,6 +49,7 @@ Hardare Tested
 * [RPI2: 1-Wire Host Adapter for Raspberry Pi](http://www.sheepwalkelectronics.co.uk/product_info.php?cPath=22&products_id=30)
 * [SWE1: Temperature Sensor](http://www.sheepwalkelectronics.co.uk/product_info.php?cPath=23&products_id=53)
 * [SWE3: Humidity Sensor Module](http://www.sheepwalkelectronics.co.uk/product_info.php?cPath=23&products_id=55)
+* [SWE4: Dual Channel I/O Module](http://www.sheepwalkelectronics.co.uk/product_info.php?cPath=23&products_id=59)
 
 
 
