@@ -50,7 +50,11 @@ Hardare Tested
 * [SWE1: Temperature Sensor](http://www.sheepwalkelectronics.co.uk/product_info.php?cPath=23&products_id=53)
 * [SWE3: Humidity Sensor Module](http://www.sheepwalkelectronics.co.uk/product_info.php?cPath=23&products_id=55)
 * [SWE4: Dual Channel I/O Module](http://www.sheepwalkelectronics.co.uk/product_info.php?cPath=23&products_id=59)
-
+* [DS1822 Econo 1-Wire Digital Thermometer](http://www.maximintegrated.com/en/products/DS1822)
+* [DS2401 Silicon Serial Number](http://www.maximintegrated.com/en/products/DS2401)
+* [DS2406 Dual Addressable Switch Plus 1Kb Memory](http://www.maximintegrated.com/en/products/DS2406)
+* [DS2408 1-Wire 8-Channel Addressable Switch](http://www.maximintegrated.com/en/products/DS2408)
+* [DS2438 Smart Battery Monitor](http://www.maximintegrated.com/en/products/DS2438) (often used as a temperature and humidity sensor)
 
 
 [Node-RED]:  http://nodered.org/
