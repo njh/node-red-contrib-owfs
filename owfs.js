@@ -155,7 +155,7 @@ module.exports = function(RED) {
             });
         }
 
-        var blacklist = new RegExp("/(?:address|crc8|errata/|family|id|locator|pages/|r_[a-z]+)$");
+        var blacklist = new RegExp("/(?:address|crc8|errata/|family|id|locator|pages/|aux/|r_[a-z]+)$");
         var client = new owfs.Client(req.query.host, req.query.port);
 
         recursiveDirall(client, "/", blacklist)
