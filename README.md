@@ -25,6 +25,8 @@ In addition the owserver port and/or host can be specified in **msg.host** and *
 
 To trigger reading sensors periodically, use an Inject node to send messages every X seconds.
 
+To check presence of sensors, select Mode **Presence** and use an Inject node to request the status. A boolean value in **msg.payload** will indicate the sensor presence status.
+
 
 Example
 -------

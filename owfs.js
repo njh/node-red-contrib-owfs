@@ -51,7 +51,7 @@ module.exports = function(RED) {
         });
         return r;
     }
-    
+
     function parseResult(result) {
         if (typeof result.match === 'function') {
             if (result.match(/^\-?\d+\.\d+$/)) {
@@ -96,6 +96,7 @@ module.exports = function(RED) {
             var client = new owfs.Client(host, port);
             var clientRead = Promise.promisify(client.read, {context: client});
             var clientWrite = Promise.promisify(client.write, {context: client});
+            var clientPresence = Promise.promisify(client.presence, {context: client});
 
             if (mode == 'write') {
                 var performRequest = function(path) {
@@ -108,6 +109,15 @@ module.exports = function(RED) {
                     });
                 }
                 node.status({fill:"blue", shape:"dot", text:"Writing"});
+            } else if (mode == 'presence') {
+                var performRequest = function(path) {
+                    if (uncached) {
+                        return clientPresence('uncached/' + path);
+                    } else {
+                        return clientPresence(path);
+                    }
+                }
+                node.status({fill:"blue", shape:"dot", text:"Checking presence"});
             } else {
                 var performRequest = function(path) {
                     if (uncached) {
