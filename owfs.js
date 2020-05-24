@@ -130,7 +130,7 @@ module.exports = function(RED) {
             }
 
             var sendResult = function(result, index) {
-                msg.payload = parseResult(result);
+                msg = { payload:  parseResult(result)};
                 msg.topic = paths[index];
                 msg.timestamp = Date.now();
                 node.send(msg);
